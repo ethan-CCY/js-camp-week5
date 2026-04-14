@@ -255,6 +255,9 @@ function clearCart() {
  */
 function calculateTotalRevenue(orders) {
   // 請實作此函式
+  return orders
+    .filter((order) => order.paid)
+    .reduce((acc, order) => acc + order.total, 0);
 }
 
 /**
@@ -265,6 +268,7 @@ function calculateTotalRevenue(orders) {
  */
 function filterOrdersByStatus(orders, isPaid) {
   // 請實作此函式
+  return orders.filter((order) => order.paid === isPaid);
 }
 
 /**
@@ -281,6 +285,17 @@ function filterOrdersByStatus(orders, isPaid) {
  */
 function generateOrderReport(orders) {
   // 請實作此函式
+  const paidOrders = orders.filter((order) => order.paid);
+  const unpaidOrders = orders.filter((order) => !order.paid);
+  const totalOrders = orders.reduce((acc, order) => acc + order.total, 0);
+
+  return {
+    totalOrders: orders.length,
+    paidOrders: paidOrders.length,
+    unpaidOrders: unpaidOrders.length,
+    totalRevenue: calculateTotalRevenue(orders),
+    averageOrderValue: Math.round(totalOrders / orders.length) // 所有訂單平均金額
+  }
 }
 
 /**
@@ -294,7 +309,28 @@ function generateOrderReport(orders) {
  */
 function groupOrdersByPayment(orders) {
   // 請實作此函式
+  const order1 = orders.filter((order) => order.user.payment === 'ATM');
+  const order2 = orders.filter((order) => order.user.payment === 'Credit Card');
+  
+  return{
+    'ATM': [order1],
+    'Credit Card': [order2]
+  }
 }
+/***使用group.reduce的方式***
+function groupOrdersByPayment(orders) {
+  return orders.reduce((group, order) => {
+    const payment = order.user.payment
+    //group.atm =>>> [order1]
+    if (!group[payment]){
+      group[payment] = [];
+    }
+    
+    group[payment].push(order)
+    return group;
+  },{});
+}
+*/
 
 // ========================================
 // 測試區域（可自行修改測試）
